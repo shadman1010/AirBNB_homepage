@@ -1,0 +1,13 @@
+{
+  "name": "airbnb-clone",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start:backend": "npm --prefix backend run dev",
+    "start:frontend": "npm --prefix frontend run dev",
+    "start": "npm run start:backend"
+  },
+  "dependencies": {
+    "mongodb": "^6.19.0"
+  }
+}
