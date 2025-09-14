@@ -13,7 +13,9 @@ type Listing = {
   maxGuests?: number;
 };
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+const fetcher = (url: string) => fetch(`${API_BASE}${url}`).then(r => r.json());
+const asset = (p: string) => `${API_BASE}${p}`;
 
 export default function Home(){
   const [location, setLocation] = useState('');
@@ -25,7 +27,7 @@ export default function Home(){
   const [tab, setTab] = useState<'tips'|'apartments'>('tips');
 
   useEffect(()=>{
-    fetch(`/api/translations/${locale}`).then(r=>r.json()).then(t=>setTrans(t)).catch(()=>{});
+    fetcher(`/api/translations/${locale}`).then(t=>setTrans(t)).catch(()=>{});
   },[locale]);
 
   const params = new URLSearchParams();
@@ -34,7 +36,8 @@ export default function Home(){
   if(checkOut) params.set('checkOut', checkOut);
   if(guests) params.set('guests', String(guests));
 
-  const { data, error } = useSWR<Listing[]>(`/api/listings?${params.toString()}`, fetcher);
+  const query = params.toString();
+  const { data, error } = useSWR<Listing[]>(`/api/listings${query ? `?${query}` : ''}`, fetcher);
 
   return (
     <div style={{width: '100%', minHeight: '100vh', background: '#fafafa'}}>
@@ -71,7 +74,7 @@ export default function Home(){
               <div key={l._id} className="listing-card">
                 <div className="badge">{locale==='en' ? 'Guest favorite' : 'অতিথি প্রিয়'}</div>
                 <div className="heart">♡</div>
-                <img src={l.image} alt={l.title} className="card-media" />
+                <img src={asset(l.image)} alt={l.title} className="card-media" />
                 <div className="card-body">
                   <div className="card-title">{l.title}</div>
                   <div className="card-sub">${l.price} for 2 nights · ★ {l.rating}</div>
@@ -88,7 +91,7 @@ export default function Home(){
               <div key={l._id} className="listing-card">
                 <div className="badge">{locale==='en' ? 'Guest favorite' : 'অতিথি প্রিয়'}</div>
                 <div className="heart">♡</div>
-                <img src={l.image} alt={l.title} className="card-media" />
+                <img src={asset(l.image)} alt={l.title} className="card-media" />
                 <div className="card-body">
                   <div className="card-title">{l.title}</div>
                   <div className="card-sub">${l.price} for 2 nights · ★ {l.rating}</div>
@@ -199,7 +202,7 @@ export default function Home(){
           <div key={l._id} className="listing-card">
             <div className="badge">{locale==='en' ? 'Guest favorite' : 'অতিথি প্রিয়'}</div>
             <div className="heart">♡</div>
-            <img src={l.image} alt={l.title} className="card-media" />
+            <img src={asset(l.image)} alt={l.title} className="card-media" />
             <div className="card-body">
               <div className="card-title">{l.title}</div>
               <div className="card-sub">${l.price} for 2 nights · ★ {l.rating}</div>
